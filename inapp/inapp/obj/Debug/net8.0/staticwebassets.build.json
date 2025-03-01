@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "EvF/b/pKAHwAFnKIRfPSd+NNJOMhLsDdZ4gODiykZxg=",
+  "Source": "inapp",
+  "BasePath": "_content/inapp",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
