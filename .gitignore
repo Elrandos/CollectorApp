@@ -1,0 +1,21 @@
+﻿# Backend (ASP.NET)
+inapp/bin/
+inapp/obj/
+inapp/.vs/
+inapp/*.user
+inapp/*.suo
+inapp/*.cache
+
+# Frontend (React Native)
+webapp/node_modules/
+webapp/.expo/
+webapp/.env
+webapp/build/
+webapp/dist/
+
+# Mobile (React Native)
+mobileapp/node_modules/
+mobileapp/.expo/
+mobileapp/.env
+mobileapp/build/
+mobileapp/dist/
