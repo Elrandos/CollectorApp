@@ -1,3 +1,10 @@
+using inapp.Data;
+using inapp.Helpers;
+using inapp.Interfaces.Repositories;
+using inapp.Interfaces.Services;
+using inapp.Repositories;
+using inapp.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace inapp
 {
@@ -7,16 +14,20 @@ namespace inapp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.AddDbContext<CollectorDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddSingleton<PasswordHasherHelper>();
+            builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
+
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
