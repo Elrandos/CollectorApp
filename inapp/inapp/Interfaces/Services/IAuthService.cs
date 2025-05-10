@@ -8,5 +8,6 @@ namespace inapp.Interfaces.Services
         Task<UserDto?> Authenticate(string login, string password);
         Task<UserDto?> Register(string login, string email, string passwordHash);
         Task<UserDto> DeleteAccount(string login, string password);
+        Task<UserDto?> GetByIdAsync(Guid id);
     }
 }

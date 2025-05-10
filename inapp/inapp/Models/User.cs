@@ -1,4 +1,6 @@
-﻿namespace inapp.Models
+﻿using inapp.Enums;
+
+namespace inapp.Models
 {
     public class User
     {
@@ -6,5 +8,6 @@
         public string Login { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
+        public Role Role { get; set;  }
     }
 }

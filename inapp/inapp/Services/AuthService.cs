@@ -1,5 +1,6 @@
 ﻿using inapp.Data;
 using inapp.DTOs;
+using inapp.Enums;
 using inapp.Helpers;
 using inapp.Interfaces.Services;
 using inapp.Models;
@@ -52,7 +53,8 @@ namespace inapp.Services
                 Id = Guid.NewGuid(),
                 Email = email,
                 Login = login,
-                PasswordHash = _passwordHasherHelper.HashPassword(password)
+                PasswordHash = _passwordHasherHelper.HashPassword(password),
+                Role = Role.User
             };
 
             _context.Users.Add(user);
@@ -68,6 +70,19 @@ namespace inapp.Services
         public async Task<UserDto> DeleteAccount(string login, string password)
         {
             return new UserDto();
+        }
+        public async Task<UserDto?> GetByIdAsync(Guid id)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+                return null;
+
+            return new UserDto
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Email = user.Email 
+            };
         }
     }
 }

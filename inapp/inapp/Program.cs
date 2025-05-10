@@ -42,21 +42,12 @@ namespace inapp
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
-                    };
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            if (context.Request.Cookies.ContainsKey("AuthToken"))
-                            {
-                                context.Token = context.Request.Cookies["AuthToken"];
-                            }
-                            return Task.CompletedTask;
-                        }
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)
+                        )
                     };
                 });
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
             if (app.Environment.IsDevelopment())

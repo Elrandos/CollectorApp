@@ -5,12 +5,10 @@ using System.Security.Claims;
 using System.Text;
 using inapp.Attribiutes;
 using inapp.DTOs;
-using inapp.DTOs.Responses;
 using inapp.Enums;
 using inapp.Interfaces.Services;
-using RegisterRequest = inapp.DTOs.Requests.RegisterRequest;
 using Microsoft.IdentityModel.Tokens;
-using LoginRequest = inapp.DTOs.Requests.LoginRequest;
+using inapp.Services;
 
 namespace inapp.Controllers;
 
@@ -20,12 +18,14 @@ public class CollectionController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly ICollectionService _collectionService;
+    private readonly IAuthService _authService;
 
 
-    public CollectionController(IConfiguration configuration, ICollectionService collectionService)
+    public CollectionController(IConfiguration configuration, ICollectionService collectionService, IAuthService authService)
     {
         _configuration = configuration;
         _collectionService = collectionService;
+        _authService = authService;
     }
 
     [Authorize]
@@ -37,19 +37,25 @@ public class CollectionController : ControllerBase
     }
 
     [Authorize]
-    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.BadRequest)]
-    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.UserNotFound)]
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUser()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //var user = await _userManager.FindByIdAsync(userId);
 
-        //if (user == null)
-        //    return NotFound("Nie znaleziono u¿ytkownika.");
+        if (!Guid.TryParse(userId, out var parsedId))
+            return BadRequest("Nieprawid³owe ID u¿ytkownika w tokenie.");
 
-        //return Ok(new { user.Id, user.Email, user.FullName });
-        return Ok();
+        var user = await _authService.GetByIdAsync(parsedId);
+
+        if (user == null)
+            return NotFound("Nie znaleziono u¿ytkownika.");
+
+        return Ok(new
+        {
+            user.Id,
+            user.Login,
+            user.Email
+        });
     }
 
     private string GenerateJwtToken(UserDto user)
