@@ -10,12 +10,12 @@ namespace inapp.Services
     public class AuthService : IAuthService
     {
         private readonly CollectorDbContext _context;
-        private readonly PasswordHasherHelper _passwordHasher;
+        private readonly PasswordHasherHelper _passwordHasherHelper;
 
-        public AuthService(CollectorDbContext context, PasswordHasherHelper passoHasherHelper)
+        public AuthService(CollectorDbContext context, PasswordHasherHelper passwordHasherHelperHelper)
         {
             _context = context;
-            _passwordHasher = passoHasherHelper;
+            _passwordHasherHelper = passwordHasherHelperHelper;
         }
 
         public async Task<UserDto?> Authenticate(string login, string password)
@@ -26,7 +26,7 @@ namespace inapp.Services
                 return null;
             }
 
-            if (_passwordHasher.VerifyPassword(password, user.PasswordHash))
+            if (_passwordHasherHelper.VerifyPassword(password, user.PasswordHash))
             {
                 var userDto = new UserDto()
                 {
@@ -52,7 +52,7 @@ namespace inapp.Services
                 Id = Guid.NewGuid(),
                 Email = email,
                 Login = login,
-                PasswordHash = _passwordHasher.HashPassword(password)
+                PasswordHash = _passwordHasherHelper.HashPassword(password)
             };
 
             _context.Users.Add(user);

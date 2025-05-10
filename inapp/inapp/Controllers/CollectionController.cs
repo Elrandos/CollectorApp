@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using inapp.Attribiutes;
 using inapp.DTOs;
+using inapp.DTOs.Responses;
 using inapp.Enums;
 using inapp.Interfaces.Services;
 using RegisterRequest = inapp.DTOs.Requests.RegisterRequest;
@@ -15,44 +16,24 @@ namespace inapp.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthorizeController : ControllerBase
+public class CollectionController : ControllerBase
 {
     private readonly IConfiguration _configuration;
-    private readonly IAuthService _authService;
+    private readonly ICollectionService _collectionService;
 
-    public AuthorizeController(IConfiguration configuration,
-        IAuthService authService)
+
+    public CollectionController(IConfiguration configuration, ICollectionService collectionService)
     {
         _configuration = configuration;
-        _authService = authService;
+        _collectionService = collectionService;
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    [Authorize]
+    [HttpGet("GetCollection")]
+    public async Task<IActionResult> GetCollectionAsync()
     {
-        var user = await _authService.Register(request.Login, request.Email, request.Password);
-        if (user == null)
-        {
-            return BadRequest(InnerCode.BadRequest);
-        }
-        var token = GenerateJwtToken(user);
-        return Ok(new { token });
-    }
-
-    [HttpPost("login")]
-    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.BadRequest)]
-    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.UserNotFound)]
-    public async Task<IActionResult> Login(LoginRequest request)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var user = await _authService.Authenticate(request.Login, request.Password);
-        if (user == null)
-            return Unauthorized(InnerCode.BadCredentials);
-
-        var token = GenerateJwtToken(user);
-        return Ok(new { token });
+        var result = await _collectionService.GetAllForCurrentUser();
+        return Ok(result);
     }
 
     [Authorize]
