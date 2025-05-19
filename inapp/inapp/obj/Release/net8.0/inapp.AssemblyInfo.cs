@@ -12,9 +12,9 @@ using System;
 using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("inapp")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0fdb74d36c5707eb56099a448057e34acbd19866")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+88c148becfa77a5efca04849aa9ff8c15ae938dc")]
 [assembly: System.Reflection.AssemblyProductAttribute("inapp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("inapp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
