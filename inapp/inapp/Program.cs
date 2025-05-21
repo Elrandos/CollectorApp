@@ -1,8 +1,11 @@
 using System.Text;
 using inapp.Data;
 using inapp.Helpers;
+using inapp.Interfaces.Providers;
 using inapp.Interfaces.Repositories;
 using inapp.Interfaces.Services;
+using inapp.Models;
+using inapp.Providers;
 using inapp.Repositories;
 using inapp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +27,9 @@ namespace inapp
             builder.Services.AddSingleton<PasswordHasherHelper>();
             builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
             builder.Services.AddScoped<ICollectionService, CollectionService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IGuidProvider, GuidProvider>();
+
             builder.Services.AddOpenApiDocument();
 
             builder.Services.AddControllers();

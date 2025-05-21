@@ -18,7 +18,7 @@ namespace inapp.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<UserDto?> Authenticate(string login, string password)
+        public async Task<UserDto?> AuthenticateAsync(string login, string password)
         {
             var user = await _userRepository.GetByLoginAsync(login);
             if (user == null)
@@ -36,7 +36,7 @@ namespace inapp.Services
             return null;
         }
 
-        public async Task<UserDto?> Register(string login, string email, string password)
+        public async Task<UserDto?> RegisterAsync(string login, string email, string password)
         {
             if (await _userRepository.ExistsAsync(login, email))
                 return null;
@@ -46,7 +46,8 @@ namespace inapp.Services
                 Id = Guid.NewGuid(),
                 Login = login,
                 Email = email,
-                PasswordHash = _passwordHasher.HashPassword(password)
+                PasswordHash = _passwordHasher.HashPassword(password),
+                Role = Role.User 
             };
 
             await _userRepository.AddAsync(user);
@@ -59,7 +60,7 @@ namespace inapp.Services
             };
         }
 
-        public async Task<bool> DeleteAccount(string login, string password)
+        public async Task<bool> DeleteAccountAsync(string login, string password)
         {
             var user = await _userRepository.GetByLoginAsync(login);
             if (user == null || !_passwordHasher.VerifyPassword(password, user.PasswordHash))

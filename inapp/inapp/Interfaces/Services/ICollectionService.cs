@@ -4,6 +4,6 @@ namespace inapp.Interfaces.Services
 {
     public interface ICollectionService
     {
-        Task<List<CollectionItem>> GetAllForCurrentUser();
+        Task<List<CollectionItem>> GetAllForCurrentUserAsync(Guid userId);
     }
 }

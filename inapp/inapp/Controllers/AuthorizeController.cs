@@ -30,7 +30,7 @@ public class AuthorizeController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var user = await _authService.Register(request.Login, request.Email, request.Password);
+        var user = await _authService.RegisterAsync(request.Login, request.Email, request.Password);
         if (user == null)
         {
             return BadRequest(InnerCode.BadRequest);
@@ -47,7 +47,7 @@ public class AuthorizeController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await _authService.Authenticate(request.Login, request.Password);
+        var user = await _authService.AuthenticateAsync(request.Login, request.Password);
         if (user == null)
             return Unauthorized(InnerCode.BadCredentials);
 
