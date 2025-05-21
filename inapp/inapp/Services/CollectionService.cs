@@ -10,12 +10,7 @@ namespace inapp.Services
         public async Task<List<CollectionItem>> GetAllForCurrentUser()
         {
             var result = new List<CollectionItem>();
-            result.Add(new CollectionItem
-            {
-                CollectionId = new Guid(),
-                Collection = new UserCollection(),
-                Description = "TAKI CHUJ"
-            });
+            
             return result;
         }
     }

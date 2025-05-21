@@ -7,6 +7,8 @@
         public string Name { get; set; }
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
-        public List<CollectionItem> Items { get; set; } = new();
+
+        public virtual User User { get; set; }
+        public virtual ICollection<CollectionItem> CollectionItems { get; set; }
     }
 }

@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text;
-using inapp.Attribiutes;
 using inapp.DTOs;
-using inapp.Enums;
+using inapp.Interfaces.Repositories;
 using inapp.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
-using inapp.Services;
 
 namespace inapp.Controllers;
 
@@ -19,13 +17,14 @@ public class CollectionController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly ICollectionService _collectionService;
     private readonly IAuthService _authService;
+    private readonly IUserRepository _userRepository;
 
-
-    public CollectionController(IConfiguration configuration, ICollectionService collectionService, IAuthService authService)
+    public CollectionController(IConfiguration configuration, ICollectionService collectionService, IAuthService authService, IUserRepository userRepository)
     {
         _configuration = configuration;
         _collectionService = collectionService;
         _authService = authService;
+        _userRepository = userRepository;
     }
 
     [Authorize]
@@ -45,7 +44,7 @@ public class CollectionController : ControllerBase
         if (!Guid.TryParse(userId, out var parsedId))
             return BadRequest("Nieprawid³owe ID u¿ytkownika w tokenie.");
 
-        var user = await _authService.GetByIdAsync(parsedId);
+        var user = await _userRepository.GetByIdAsync(parsedId);
 
         if (user == null)
             return NotFound("Nie znaleziono u¿ytkownika.");

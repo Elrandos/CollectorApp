@@ -8,6 +8,6 @@
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
 
-        public UserCollection Collection { get; set; }
+        public virtual UserCollection UserCollection { get; set; }
     }
 }
