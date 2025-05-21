@@ -11,6 +11,7 @@ using inapp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace inapp
 {
@@ -20,9 +21,14 @@ namespace inapp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<CollectorDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // 1. CONFIGURATION
+            var config = builder.Configuration;
 
+            // 2. DATABASE
+            builder.Services.AddDbContext<CollectorDbContext>(options =>
+                options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+
+            // 3. DEPENDENCIES
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddSingleton<PasswordHasherHelper>();
             builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
@@ -30,14 +36,9 @@ namespace inapp
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IGuidProvider, GuidProvider>();
 
-            builder.Services.AddOpenApiDocument();
-
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            // 4. JWT AUTHENTICATION
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -45,22 +46,60 @@ namespace inapp
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidIssuer = config["Jwt:Issuer"],
+                        ValidAudience = config["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)
+                            Encoding.UTF8.GetBytes(config["Jwt:Secret"]!)
                         )
                     };
                 });
 
             builder.Services.AddAuthorization();
 
+            // 5. SWAGGER with JWT support
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "InApp API", Version = "v1" });
+
+                // JWT support
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer {token}'"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+            });
+
+            builder.Services.AddControllers();
+
             var app = builder.Build();
+
+            // 6. MIDDLEWARE
             if (app.Environment.IsDevelopment())
             {
-                app.UseOpenApi();
-                app.UseSwaggerUi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

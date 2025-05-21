@@ -31,7 +31,13 @@ public class CollectionController : ControllerBase
     [HttpGet("GetCollection")]
     public async Task<IActionResult> GetCollectionAsync()
     {
-        var result = await _collectionService.GetAllForCurrentUser();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userId, out var parsedId))
+            return BadRequest("Nieprawid³owe ID u¿ytkownika w tokenie.");
+        var user = await _userRepository.GetByIdAsync(parsedId);
+        if (user == null)
+            return NotFound("Nie znaleziono u¿ytkownika.");
+        var result = await _collectionService.GetAllForCurrentUserAsync(user.Id);
         return Ok(result);
     }
 

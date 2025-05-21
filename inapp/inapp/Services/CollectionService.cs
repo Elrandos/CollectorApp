@@ -27,6 +27,7 @@ namespace inapp.Services
 
             return items;
         }
+
         public async Task<UserCollection> AddCollectionForUserAsync(Guid userId, string name, string? description = null, string? imageUrl = null)
         {
             var user = await _userRepository.GetByIdAsync(userId);

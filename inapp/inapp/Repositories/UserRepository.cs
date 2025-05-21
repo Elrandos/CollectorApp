@@ -26,7 +26,8 @@ namespace inapp.Repositories
 
         public async Task<bool> ExistsAsync(string login, string email)
         {
-            return await _context.User.AnyAsync(u => u.Login == login || u.Email == email);
+            var result = await _context.User.AnyAsync(u => u.Login == login || u.Email == email);
+            return result;
         }
 
         public async Task AddAsync(User user)
