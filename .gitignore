@@ -19,3 +19,4 @@ mobileapp/.expo/
 mobileapp/.env
 mobileapp/build/
 mobileapp/dist/
+/inapp/inapp/public/uploads

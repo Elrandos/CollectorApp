@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text;
+using inapp.Attribiutes;
 using inapp.DTOs;
 using inapp.Enums;
 using inapp.Interfaces.Services;
@@ -29,7 +30,7 @@ public class AuthorizeController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var user = await _authService.Register(request.Login, request.Email, request.Password);
+        var user = await _authService.RegisterAsync(request.Login, request.Email, request.Password);
         if (user == null)
         {
             return BadRequest(InnerCode.BadRequest);
@@ -39,12 +40,14 @@ public class AuthorizeController : ControllerBase
     }
 
     [HttpPost("login")]
+    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.BadRequest)]
+    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.UserNotFound)]
     public async Task<IActionResult> Login(LoginRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await _authService.Authenticate(request.Login, request.Password);
+        var user = await _authService.AuthenticateAsync(request.Login, request.Password);
         if (user == null)
             return Unauthorized(InnerCode.BadCredentials);
 
@@ -53,6 +56,8 @@ public class AuthorizeController : ControllerBase
     }
 
     [Authorize]
+    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.BadRequest)]
+    [InnerCodeSwaggerResponse(StatusCodes.Status400BadRequest, InnerCode.UserNotFound)]
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUser()
     {
@@ -72,6 +77,7 @@ public class AuthorizeController : ControllerBase
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Login),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));

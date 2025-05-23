@@ -2,6 +2,7 @@
 {
     public enum InnerCode
     {
+        None = 0,
         // 1xxx - User / Account
         UserNotFound = 1000,
         UserAlreadyExists = 1001,

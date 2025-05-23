@@ -7,6 +7,8 @@ public class CollectorDbContextFactory : IDesignTimeDbContextFactory<CollectorDb
 {
     public CollectorDbContext CreateDbContext(string[] args)
     {
+        var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../../inapp");
+
         IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")

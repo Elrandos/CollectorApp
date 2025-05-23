@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inapp.Controllers;
@@ -29,4 +30,12 @@ public class WeatherForecastController : ControllerBase
         })
         .ToArray();
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin-only")]
+    public IActionResult AdminOnlyEndpoint()
+    {
+        return Ok("Tylko admini mog¹ tu wejœæ.");
+    }
+
 }
