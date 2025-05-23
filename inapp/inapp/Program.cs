@@ -19,7 +19,11 @@ namespace inapp
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                WebRootPath = "public",
+                Args = args
+            });
 
             // 1. CONFIGURATION
             var config = builder.Configuration;
@@ -31,10 +35,12 @@ namespace inapp
             // 3. DEPENDENCIES
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddSingleton<PasswordHasherHelper>();
-            builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
+            builder.Services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
             builder.Services.AddScoped<ICollectionService, CollectionService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IGuidProvider, GuidProvider>();
+            builder.Services.AddScoped<IImageStorageService, LocalImageStorageService>();
+
 
             // 4. JWT AUTHENTICATION
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -51,6 +57,25 @@ namespace inapp
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(config["Jwt:Secret"]!)
                         )
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Console.WriteLine($"Token validated for user: {context.Principal.Identity?.Name}");
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                        {
+                            Console.WriteLine("Authentication challenge triggered.");
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
