@@ -28,10 +28,8 @@ namespace inapp.Services
 
         public async Task<List<UserCollectionDto>> GetAllForCurrentUserAsync(Guid userId)
         {
-            var items = await _context.UserCollection
-                .Where(ci => ci.UserId == userId)
-                .ToListAsync();
-            
+
+            var items = await _userCollectionRepository.GetAllUserCollectionsAsync(userId);
             return MapToDtoList(items);
         }
 
@@ -70,7 +68,8 @@ namespace inapp.Services
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
-                ImageUrl = c.ImageUrl
+                ImageUrl = c.ImageUrl,
+                Collections = c.CollectionItems.ToList()
             }).ToList();
         }
     }

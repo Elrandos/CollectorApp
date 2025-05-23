@@ -1,4 +1,6 @@
-﻿namespace inapp.DTOs
+﻿using inapp.Models;
+
+namespace inapp.DTOs
 {
     public class UserCollectionDto
     {
@@ -6,5 +8,6 @@
         public string Name { get; set; }
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
+        public List<CollectionItem> Collections { get; set; }
     }
 }

@@ -46,6 +46,7 @@ namespace inapp.Repositories
         {
             var items = await _context.UserCollection
                 .Where(ci => ci.UserId == userId)
+                .Include(i => i.CollectionItems)
                 .ToListAsync();
 
             return items;
