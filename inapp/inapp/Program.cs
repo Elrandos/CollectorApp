@@ -33,14 +33,21 @@ namespace inapp
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
             // 3. DEPENDENCIES
-            builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddSingleton<PasswordHasherHelper>();
-            builder.Services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
-            builder.Services.AddScoped<ICollectionService, CollectionService>();
+            //repositories
+            builder.Services.AddScoped<ICollectionItemRepository, CollectionItemRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IGuidProvider, GuidProvider>();
+            builder.Services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
+
+            //services
+            builder.Services.AddScoped<ICollectionItemService, CollectionItemService>();
+            builder.Services.AddScoped<ICollectionService, CollectionService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IImageStorageService, LocalImageStorageService>();
 
+            //rest
+            builder.Services.AddSingleton<PasswordHasherHelper>();
+            builder.Services.AddScoped<IGuidProvider, GuidProvider>();
 
             // 4. JWT AUTHENTICATION
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
